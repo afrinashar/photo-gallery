@@ -4,12 +4,16 @@ const router = express.Router();
 const Photo = require('../models/photo');
 const upload = require('../server');
 // Create a new photo
-router.post('/', upload.single('image'), async (req, res) => {
+ 
+
+  router.route('/post').post(upload.single('photo'), async(req,res)=>{
+  
   try {
     const { title, description } = req.body;
     const imagePath = req.file.path;
     const newPhoto = new Photo({ title, description, imagePath });
     await newPhoto.save();
+    console.log(req.file, req.body)
     res.status(201).json(newPhoto);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -17,7 +21,7 @@ router.post('/', upload.single('image'), async (req, res) => {
 });
 
 // Get all photos
-router.get('/', async (req, res) => {
+router.get('/get', async (req, res) => {
   try {
     const photos = await Photo.find();
     res.json(photos);
@@ -27,7 +31,7 @@ router.get('/', async (req, res) => {
 });
 
 // Update a photo
-router.put('/:id', async (req, res) => {
+router.put('update/:id', async (req, res) => {
   try {
     const { title, description } = req.body;
     const updatedPhoto = await Photo.findByIdAndUpdate(
@@ -42,7 +46,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete a photo
-router.delete('/:id', async (req, res) => {
+router.delete('delete/:id', async (req, res) => {
   try {
     await Photo.findByIdAndRemove(req.params.id);
     res.json({ message: 'Photo deleted' });

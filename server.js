@@ -6,7 +6,7 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-mongoose.connect('mongodb+srv://afrin:961215106001@cluster0.hbkqtqv.mongodb.net/', {
+mongoose.connect('mongodb+srv://afrin:961215106001@cluster0.hbkqtqv.mongodb.net/Photo', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -24,11 +24,12 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + '-' + file.originalname);
   },
 });
-
-const upload = multer({ storage });
+//const upload = multer({dest:'images/'})
+ const upload = multer({ storage });
+module.exports = upload;
 
 // Define your routes (CRUD operations)
-app.use('/photos', require('./routes/photoRoutes'));
+app.use('/Image', require('./routes/photoRoutes'));
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
