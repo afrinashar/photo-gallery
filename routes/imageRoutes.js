@@ -4,10 +4,10 @@ const router = express.Router();
 const imageController = require('../controllers/imageController');
 const upload = require('../middleware/upload');
 
-router.get('/images', imageController.getAllImages);
-router.get('/images/id', imageController.getImagesById);
-router.post('/images', upload, imageController.createImage);
-router.put('/images/:id', imageController.updateImage);
-router.delete('/images/:id', imageController.deleteImage);
+router.get('/photos', imageController.getAllImages);
+router.get('/photos/id', imageController.getImagesById);
+router.post('/photos', upload, imageController.createImage);
+router.put('/photos/:id', imageController.updateImage);
+router.delete('/photos/:id', imageController.deleteImage);
 
 module.exports = router;

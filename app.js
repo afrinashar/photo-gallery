@@ -2,9 +2,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const imageRoutes = require('./routes/imageRoutes');
 const path = require('path');
+var cors = require('cors');
 
 const app = express();
 
+app.use(cors());
 // Connect to MongoDB
 mongoose.connect('mongodb+srv://afrin:961215106001@cluster0.hbkqtqv.mongodb.net/ImageGallery', {
   // useNewUrlParser: true,

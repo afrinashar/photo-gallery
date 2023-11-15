@@ -4,7 +4,20 @@ const Image = require('../models/Image');
 const imageController = {
   getAllImages: async (req, res) => {
     try {
-      const images = await Image.find();
+      const { page = 1, limit = 10, sort, search } = req.query;
+
+      const query = {};
+      if (search) {
+        query.$or = [
+          { name: { $regex: search, $options: 'i' } },
+          { description: { $regex: search, $options: 'i' } },
+        ];
+      }
+  
+      const images = await Image.find(query)
+        .sort(sort)
+        .limit(parseInt(limit))
+        .skip((page - 1) * limit);
       res.json(images);
     } catch (err) {
       console.error(err);
