@@ -20,6 +20,7 @@ const imageController = {
         .skip((page - 1) * limit);
       res.json(images);
     } catch (err) {
+   //   req.flash('error_msg', 'Server Error');
       console.error(err);
       res.status(500).send('Server Error');
     }
@@ -29,6 +30,7 @@ const imageController = {
       const images = await Image.findById();
       res.json(images);
     } catch (err) {
+   //   req.flash('error_msg', 'Server Error');
       console.error(err);
       res.status(500).send('Server Error');
     }
@@ -40,7 +42,9 @@ const imageController = {
       const newImage = new Image({ name, description, imageUrl });
       await newImage.save();
       res.json(newImage);
+      req.flash('success_msg', 'Image uploaded successfully');
     } catch (err) {
+      req.flash('error_msg', 'Server Error');
       console.error(err);
       res.status(500).send('Server Error');
     }
@@ -52,7 +56,9 @@ const imageController = {
     try {
       const updatedImage = await Image.findByIdAndUpdate(req.params.id, { name, description }, { new: true });
       res.json(updatedImage);
+  //    req.flash('success_msg', 'Image updated successfully');
     } catch (err) {
+   //   req.flash('error_msg', 'Server Error');
       console.error(err);
       res.status(500).send('Server Error');
     }
@@ -62,7 +68,9 @@ const imageController = {
     try {
       await Image.findByIdAndRemove(req.params.id);
       res.json({ msg: 'Image removed' });
+   //   req.flash('success_msg', 'Image removed successfully');
     } catch (err) {
+   //   req.flash('error_msg', 'Server Error');
       console.error(err);
       res.status(500).send('Server Error');
     }

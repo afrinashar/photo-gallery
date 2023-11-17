@@ -3,8 +3,10 @@ const mongoose = require('mongoose');
 const imageRoutes = require('./routes/imageRoutes');
 const path = require('path');
 var cors = require('cors');
-
+//const flash = require('express-flash');
 const app = express();
+const passport = require('./config/passport');
+const session = require('express-session');
 
 app.use(cors());
 // Connect to MongoDB
@@ -15,16 +17,33 @@ mongoose.connect('mongodb+srv://afrin:961215106001@cluster0.hbkqtqv.mongodb.net/
   // useCreateIndex: true,
 }).then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('Error connecting to MongoDB', err));
-
+// Set up express-session and express-flash
+app.use(session({
+  secret: 'your-secret-key',
+  resave: true,
+  saveUninitialized: true
+}));
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
 // Set up the middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+//app.use(flash());
 // Set up the static directory for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Set up routes
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  next();
+});
 app.use(imageRoutes);
+// Routes
+const authRoutes = require('./routes/authRoutes');
+app.use(authRoutes);
+
 
 // Set up the port for the server to run
 const PORT = process.env.PORT || 3000;
