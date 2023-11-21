@@ -34,16 +34,28 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Set up routes
-app.use((req, res, next) => {
-  res.locals.success_msg = req.flash('success_msg');
-  res.locals.error_msg = req.flash('error_msg');
-  next();
-});
+// app.use((req, res, next) => {
+//   res.locals.success_msg = req.flash('success_msg');
+//   res.locals.error_msg = req.flash('error_msg');
+//   next();
+// });
 app.use(imageRoutes);
 // Routes
-const authRoutes = require('./routes/authRoutes');
+const authRoutes = require('./routes/index');
 app.use(authRoutes);
+// Express middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(session({ secret: 'your_secret_key', resave: false, saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
 
+// Passport configuration
+require('./config/passport');
+
+// Routes
+//app.use('/', indexRoutes);
+//app.use('/', adminRoutes);
 
 // Set up the port for the server to run
 const PORT = process.env.PORT || 3000;

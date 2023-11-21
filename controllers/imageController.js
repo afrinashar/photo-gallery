@@ -26,8 +26,10 @@ const imageController = {
     }
   },
   getImagesById: async (req, res) => {
+
     try {
-      const images = await Image.findById();
+      console.log(req.params.id);
+      const images = await Image.findById(req.params.id);
       res.json(images);
     } catch (err) {
    //   req.flash('error_msg', 'Server Error');
