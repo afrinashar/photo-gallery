@@ -9,7 +9,7 @@ const photoSchema = new mongoose.Schema({
   description: {
     type: String
   },
-  imageUrl: {
+  imageFile: {
     type: String,
     required: true
   },
