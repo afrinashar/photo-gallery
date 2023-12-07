@@ -38,10 +38,10 @@ const imageController = {
     }
   },
   createImage: async (req, res) => {
-    const { name, description, imageFile } = req.body;
+    const { name, description, imageUrl } = req.body;
 
     try {
-      const newImage = new Image({ name, description, imageFile });
+      const newImage = new Image({ name, description, imageUrl });
       await newImage.save();
       res.json(newImage);
       //req.flash('success_msg', 'Image uploaded successfully');
@@ -53,10 +53,10 @@ const imageController = {
   },
 
   updateImage: async (req, res) => {
-    const { name, description,imageFile } = req.body;
+    const { name, description,imageUrl } = req.body;
 
     try {
-      const updatedImage = await Image.findByIdAndUpdate(req.params.id, { name, description,imageFile }, { new: true });
+      const updatedImage = await Image.findByIdAndUpdate(req.params.id, { name, description,imageUrl }, { new: true });
       res.json(updatedImage);
   //    req.flash('success_msg', 'Image updated successfully');
     } catch (err) {
