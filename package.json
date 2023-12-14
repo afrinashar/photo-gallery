@@ -9,9 +9,9 @@
 =======
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js",
-    "start": "nodemon serverjs",
->>>>>>> 2d84c6b88ecd694834ccbf5dfec7c71ef0008309
+    "dev": "node --watch app.js",
+ "start": "forever start --minUptime 1000 --spinSleepTime 1000 app.js",
+    "stop":  "forever stop app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
