@@ -1,26 +1,35 @@
-// config/passport.js
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-//const bcrypt = require('bcrypt');
-const User = require('../models/User');
+// passp.js 
+const passport = require("passport"); 
+const LocalStrategy = require("passport-local").Strategy; 
+const User = require("./models"); 
+const bcrypt = require("bcrypt"); 
 
-// Initialize Passport
-passport.use('regular', new LocalStrategy((username, password, done) => {
-  // ... (same logic as before)
-}));
+passport.use( 
+	new LocalStrategy(async (username, password, done) => { 
+		try { 
+			// Find the user by username in the database 
+			const user = await User.findOne({ username }); 
+			// If the user does not exist, return an error 
+			if (!user) { 
+				return done(null, false, { error: "Incorrect username" }); 
+			} 
 
-passport.use('admin', new LocalStrategy((username, password, done) => {
-  // ... (same logic as before)
-}));
+			// Compare the provided password with the 
+			// hashed password in the database 
+			const passwordsMatch = await bcrypt.compare( 
+				password, 
+				user.password 
+			); 
 
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-  User.findById(id, (err, user) => {
-    done(err, user);
-  });
-});
-
-module.exports = passport;
+			// If the passwords match, return the user object 
+			if (passwordsMatch) { 
+				return done(null, user); 
+			} else { 
+				// If the passwords don't match, return an error 
+				return done(null, false, { error: "Incorrect password" }); 
+			} 
+		} catch (err) { 
+			return done(err); 
+		} 
+	}) 
+); 
