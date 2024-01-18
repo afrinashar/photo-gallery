@@ -4,7 +4,7 @@ const Image = require('../models/Image');
 const imageController = {
   getAllImages: async (req, res) => {
     try {
-      const { page = 1, limit = 10, sort, search } = req.query;
+      const { page = 1, limit = 50, sort, search } = req.query;
 
       const query = {};
       if (search) {
@@ -36,18 +36,22 @@ const imageController = {
     }
   },
   createImage: async (req, res) => {
-    const { name, description, imageUrl } = req.body;
+    const { name, description} = req.body;
 const {image}=req.file.imageUrl
     try {
+if(!image){
+res.status(400).send('image required')
+}
+
       const newImage = new Image({ name, description, image });
       await newImage.save();
       res.json(newImage);
-      req.flash('success_msg', 'Image uploaded successfully');
+     // req.flash('success_msg', 'Image uploaded successfully');
     } catch (err) {
-      req.flash('error_msg', 'Server Error');
+     // req.flash('error_msg', 'Server Error');
       console.error(err);
       res.status(500).send('Server Error');
-    }
+    } 
   },
 
   updateImage: async (req, res) => {

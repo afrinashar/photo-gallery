@@ -1,125 +1,84 @@
-<<<<<<< HEAD
-//controllers.js 
-const express = require("express"); 
-const router = express.Router(); 
-const User = require("./models"); 
-const passport = require("passport"); 
-const bcrypt = require("bcrypt"); 
+const User = require('../models/User')
+const bcrypt = require("bcryptjs");      
 
-// User registration route 
-router.post("/register", async (req, res) => { 
-	console.log(req.body); 
-	const { username, email, password, confirmpassword } = req.body; 
-	if (!username && !email && !password && !confirmpassword) { 
-		return res 
-			.status(403) 
-			.render("register", { error: "All Fields are required" }); 
-	} 
-	if (confirmpassword !== password) { 
-		return res 
-			.status(403) 
-			.render("register", { error: "Password do not match" }); 
-	} 
-	try { 
-		// Check if user already exists 
-		const existingUser = await User.findOne({ username }); 
-		if (existingUser) { 
-			return res 
-				.status(409) 
-				.render("register", { error: "Username already exists" }); 
-		} 
+const jwt = require("jsonwebtoken");
+var nodemailer = require("nodemailer");
 
-		// Hash the password before saving it to the database 
-		const salt = await bcrypt.genSalt(15); 
-		const hashedPassword = await bcrypt.hash(password, salt); 
+const JWT_SECRET= "hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jbkj?[]]pou89ywe"
+const userController = {
 
-		// Create and save the new user 
-		const newUser = new User({ username, email, password: hashedPassword }); 
-		await newUser.save(); 
+  
+   register: async (req, res) => {
+    const { firstName, lastName, email, password, userType } = req.body;
+    console.log(firstName, lastName, email, password, userType);
+  console.log((req.body),jwt,"req");
+    const encryptedPassword = await bcrypt.hash(password, 10);
+    try {
+      const oldUser = await User.find( email );
+  
+      if (!oldUser) {
+        return res.json({ error: "User Exists" });
+      }
+      await User.create({
+        firstName,
+        lastName,
+        email,
+        password: encryptedPassword,
+        userType,
+      });
+      res.send({ status: "User Register" });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send (error );
+    }
+  } ,
 
-		return res.redirect("/login"); 
-	} catch (err) { 
-		return res.status(500).json({ message: err.message }); 
-	} 
-}); 
+   login : async (req, res) => {
+    const { email, password } = req.body;
+  
+    const user = await User.findOne({ email });  
+    if (!user) {
+      return res.json({ error: "User Not found" });
+    }
+    if (await bcrypt.compare(password, user.password)) {
+      const token = jwt.sign({ email: user.email }, JWT_SECRET, {
+        expiresIn: "15m",
+      });
+  
+      if (res.status(201)) {
+        return res.json({ status: "Login Success", data: token });
+      } else {
+        return res.json({ error: " token error" });
+      }
+    }
+    res.json({ status: "error", error: "InvAlid Password" });
+  },
+ userData: async (req, res) => {
+    const { token } = req.body;
+    try {
+      const user = jwt.verify(token, JWT_SECRET, (err, res) => {
+        if (err) {
+          return "token expired";
+        }
+        return res;
+      });
+      console.log(user);
+      if (user == "token expired") {
+        return res.send({ status: "error", data: "token expired" });
+      }
+  
+      const useremail = user.email;
+      User.findOne({ email: useremail })
+        .then((data) => {
+          res.send({ status: "ok", data: data });
+        })
+        .catch((error) => {
+          res.send({ status: "error", data: error });
+        });
+    } catch (error) { }
+  } 
+  
 
-// User login route 
-router.post( 
-	"/login", 
-	passport.authenticate("local", { session: false }), 
-	(req, res) => { 
-		req.session.name = req.body.username; 
-		req.session.save(); 
 
-		return res.redirect("/"); 
-	} 
-); 
-
-router.get("/logout", (req, res) => { 
-	req.session.destroy(); 
-	res.redirect("/"); 
-}); 
-module.exports = router; 
-=======
-//controllers.js 
-const express = require("express"); 
-const router = express.Router(); 
-const User = require("./models"); 
-const passport = require("passport"); 
-const bcrypt = require("bcrypt"); 
-
-// User registration route 
-router.post("/register", async (req, res) => { 
-	console.log(req.body); 
-	const { username, email, password, confirmpassword } = req.body; 
-	if (!username && !email && !password && !confirmpassword) { 
-		return res 
-			.status(403) 
-			.render("register", { error: "All Fields are required" }); 
-	} 
-	if (confirmpassword !== password) { 
-		return res 
-			.status(403) 
-			.render("register", { error: "Password do not match" }); 
-	} 
-	try { 
-		// Check if user already exists 
-		const existingUser = await User.findOne({ username }); 
-		if (existingUser) { 
-			return res 
-				.status(409) 
-				.render("register", { error: "Username already exists" }); 
-		} 
-
-		// Hash the password before saving it to the database 
-		const salt = await bcrypt.genSalt(15); 
-		const hashedPassword = await bcrypt.hash(password, salt); 
-
-		// Create and save the new user 
-		const newUser = new User({ username, email, password: hashedPassword }); 
-		await newUser.save(); 
-
-		return res.redirect("/login"); 
-	} catch (err) { 
-		return res.status(500).json({ message: err.message }); 
-	} 
-}); 
-
-// User login route 
-router.post( 
-	"/login", 
-	passport.authenticate("local", { session: false }), 
-	(req, res) => { 
-		req.session.name = req.body.username; 
-		req.session.save(); 
-
-		return res.redirect("/"); 
-	} 
-); 
-
-router.get("/logout", (req, res) => { 
-	req.session.destroy(); 
-	res.redirect("/"); 
-}); 
-module.exports = router; 
->>>>>>> 2d84c6b88ecd694834ccbf5dfec7c71ef0008309
+}
+  module.exports = userController;
