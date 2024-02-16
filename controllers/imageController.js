@@ -36,14 +36,16 @@ const imageController = {
     }
   },
   createImage: async (req, res) => {
-    const { name, description} = req.body;
-const {image}=req.file.imageUrl
+    const { name, description,imageUrl} = req.body;
+    console.log(req.body);
+    console.log();
+//const {image}=req.file.imageUrl
     try {
-if(!image){
-res.status(400).send('image required')
-}
+// if(!image){
+// res.status(400).send('image required')
+// }
 
-      const newImage = new Image({ name, description, image });
+      const newImage = new Image({ name, description,imageUrl});
       await newImage.save();
       res.json(newImage);
      // req.flash('success_msg', 'Image uploaded successfully');
