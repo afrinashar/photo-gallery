@@ -1,28 +1,27 @@
+/* eslint-disable no-undef */
 // controllers/imageController.js
 const Image = require('../models/Image');
 
 const imageController = {
   getAllImages: async (req, res) => {
     try {
-      const { page = 1, limit = 50, sort, search } = req.query;
+      const { searchTerm, page = 1, limit = 10, sortBy = 'name', sortOrder = 'asc' } = req.query;
 
       const query = {};
-      if (search) {
-        query.$or = [
-          { name: { $regex: search, $options: 'i' } },
-          { description: { $regex: search, $options: 'i' } },
-        ];
+      if (searchTerm) {
+        query.name = { $regex: searchTerm, $options: 'i' }; // Case insensitive search
       }
-  
-      const images = await Image.find(query)
-        .sort(sort)
-        .limit(parseInt(limit))
-        .skip((page - 1) * limit);
-      res.json(images);
-    } catch (err) {
-   //   req.flash('error_msg', 'Server Error');
-      console.error(err);
-      res.status(500).send('Server Error');
+    
+      const options = {
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10),
+        sort: { [sortBy]: sortOrder === 'asc' ? 1 : -1 },
+      };
+    
+      const photos = await Image.paginate(query, options);
+      res.json(photos);
+    } catch (error) {
+      res.status(400).json('Error: ' + error);
     }
   },
   getImagesById: async (req, res) => {
@@ -36,18 +35,23 @@ const imageController = {
     }
   },
   createImage: async (req, res) => {
-    const { name, description,imageUrl} = req.body;
-    console.log(req.body);
-    console.log();
+   const { name, description } = req.body;
+  const imageUrl = `/uploads/${req.file.filename}`;
 //const {image}=req.file.imageUrl
     try {
 // if(!image){
 // res.status(400).send('image required')
 // }
 
-      const newImage = new Image({ name, description,imageUrl});
-      await newImage.save();
-      res.json(newImage);
+
+  const newPhoto = new Image({
+    name,
+    description,
+    imageUrl,
+  });
+
+       await newPhoto.save();
+      res.json(newPhoto);
      // req.flash('success_msg', 'Image uploaded successfully');
     } catch (err) {
      // req.flash('error_msg', 'Server Error');

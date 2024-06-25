@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require("cors");
@@ -6,19 +7,23 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
 const path = require("path");
+const photos = require("./routes/imageRoutes");
+const bodyParser = require('body-parser');
+
 //const passport = require('./config/passport');
- const authRouter =require("./routes/auth.route")
+ //const authRouter =require("./routes/auth.route")
 const app = express();
 dotenv.config();
 app.use(express.json());
 app.use(cors());
 // Connect to MongoDB
- 
+app.use(bodyParser.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Configure middleware
 /* Middleware */
 app.use(
   cors({
-    origin: "http://localhost:3001",
+    origin: "http://localhost:5173",
   })
 );
 app.use(express.json());
@@ -27,11 +32,11 @@ app.use(cookieParser());
 app.use(helmet());
 app.use(morgan("dev"));
 // Use the student router
-app.use(userRoutes); 
-app.use('/auth', authRouter);
+ app.use(photos); 
+//app.use('/auth', authRouter);
  
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3008;
 const { MONGO_USERNAME, MONGO_PASSWORD } = process.env;
 
 // Start the server

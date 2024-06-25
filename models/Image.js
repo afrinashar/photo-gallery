@@ -1,5 +1,7 @@
+/* eslint-disable no-undef */
 // models/Image.js
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const imageSchema = new mongoose.Schema({
   name: {
@@ -15,9 +17,10 @@ const imageSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: new Date(),
   },
 });
+imageSchema.plugin(mongoosePaginate);
 
 const Image = mongoose.model('photos', imageSchema);
 
