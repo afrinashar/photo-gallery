@@ -23,7 +23,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 /* Middleware */
 app.use(
   cors({
-    origin: "https://gallery-react-query.vercel.app",
+    origin: "*",
   })
 );
 app.use(express.json());
